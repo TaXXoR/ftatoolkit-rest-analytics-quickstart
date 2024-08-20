@@ -32,9 +32,6 @@ resource storage_container_synapse 'Microsoft.Storage/storageAccounts/blobServic
     publicAccess: 'None'
   }
   parent: storage_blob_services
-  dependsOn: [
-    storage_blob_services
-  ]
 }
 
 resource synapse 'Microsoft.Synapse/workspaces@2021-06-01' = {
