@@ -12,7 +12,7 @@ resource storage_account 'Microsoft.Storage/storageAccounts@2021-09-01' = {
   name: storageAccountName
   kind: 'StorageV2'
   location: location
-  properties:{
+  properties: {
     minimumTlsVersion: 'TLS1_2'
     isHnsEnabled: true
   }
@@ -22,31 +22,33 @@ resource storage_account 'Microsoft.Storage/storageAccounts@2021-09-01' = {
 }
 
 resource storage_blob_services 'Microsoft.Storage/storageAccounts/blobServices@2021-09-01' = {
-  name:  '${storage_account.name}/default'
+  name: 'default'
+  parent: storage_account
 }
 
 resource storage_container_synapse 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-09-01' = {
-  name: '${storage_account.name}/default/${defaultDataLakeStorageFilesystemName}'
+  name: defaultDataLakeStorageFilesystemName
   properties: {
     publicAccess: 'None'
   }
-  dependsOn:[
+  parent: storage_blob_services
+  dependsOn: [
     storage_blob_services
   ]
-} 
+}
 
 resource synapse 'Microsoft.Synapse/workspaces@2021-06-01' = {
   name: synapseName
   location: location
   properties: {
     azureADOnlyAuthentication: true
-    defaultDataLakeStorage:{
+    defaultDataLakeStorage: {
       accountUrl: 'https://${storage_account.name}.dfs.${environment().suffixes.storage}'
       filesystem: defaultDataLakeStorageFilesystemName
     }
   }
-  identity:{
-    type:'SystemAssigned'
+  identity: {
+    type: 'SystemAssigned'
   }
 }
 
